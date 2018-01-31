@@ -346,13 +346,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 74eacbddd55ba8c47a31b3087d99f2b9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _stepFrequency: 3
+  _stepFrequency: 2
   _stride: 0.4
   _stepHeight: 0.3
   _bodyHeight: 0.9
-  _bodyUndulation: 10
-  _handPosition: {x: 0.3, y: 0.3, z: -0.2}
-  _handMove: 0.2
+  _bodyUndulation: 40
+  _handPosition: {x: 0.3, y: 0.3, z: 0.2}
+  _handMove: 0.3
   _headMove: 3
 --- !u!1001 &1580182897
 Prefab:
