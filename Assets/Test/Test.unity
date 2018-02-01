@@ -351,9 +351,10 @@ MonoBehaviour:
   _stepHeight: 0.2
   _bodyHeight: 0.9
   _bodyUndulation: 30
-  _handPosition: {x: 0.3, y: 0.2, z: 0.25}
-  _handMove: 0.3
+  _handPosition: {x: 0.3, y: 0.2, z: 0.3}
+  _handMove: 0.28
   _headMove: 8
+  _noiseFrequency: 0.8
 --- !u!1001 &1580182897
 Prefab:
   m_ObjectHideFlags: 0

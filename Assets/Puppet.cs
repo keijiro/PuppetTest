@@ -11,6 +11,7 @@ public class Puppet : MonoBehaviour
     [SerializeField] Vector3 _handPosition = new Vector3(0.3f, 0.3f, -0.2f);
     [SerializeField] float _handMove = 0.2f;
     [SerializeField] float _headMove = 3;
+    [SerializeField] float _noiseFrequency = 1.1f;
 
     Animator _animator;
     NoiseGenerator _bodyNoise;
@@ -35,7 +36,7 @@ public class Puppet : MonoBehaviour
     void Start()
     {
         _animator = GetComponent<Animator>();
-        _bodyNoise = new NoiseGenerator(1.1f);
+        _bodyNoise = new NoiseGenerator(_noiseFrequency);
 
         _leftFootPos = _newLeftFootPos = new Vector3(_stride * 0.5f, 0, 0);
         _rightFootPos = _newRightFootPos = new Vector3(_stride * -0.5f, 0, 0);
@@ -45,6 +46,7 @@ public class Puppet : MonoBehaviour
 
     void Update()
     {
+        _bodyNoise.Frequency = _noiseFrequency;
         _bodyNoise.Step();
 
         _stepTime += _stepFrequency * Time.deltaTime;
@@ -74,7 +76,7 @@ public class Puppet : MonoBehaviour
         {
             var param = Mathf.Clamp01(_stepTime + (_stepCount & 1));
             var pos = Vector3.Lerp(_leftFootPos, _newLeftFootPos, param);
-            var up = Vector3.up * Mathf.Max(0, Mathf.Sin(rad)) * _stepHeight;
+            var up = (Vector3.up * _stepHeight + _bodyNoise.Vector(10) * 0.3f) * Mathf.Max(0, Mathf.Sin(rad));
             _animator.SetIKPosition(AvatarIKGoal.LeftFoot, pos + up);
             _animator.SetIKPositionWeight(AvatarIKGoal.LeftFoot, 1);
         }
@@ -82,7 +84,7 @@ public class Puppet : MonoBehaviour
         {
             var param = Mathf.Clamp01(_stepTime + 1 - (_stepCount & 1));
             var pos = Vector3.Lerp(_rightFootPos, _newRightFootPos, param);
-            var up = Vector3.up * Mathf.Max(0, Mathf.Sin(rad + Mathf.PI)) * _stepHeight;
+            var up = (Vector3.up * _stepHeight + _bodyNoise.Vector(11) * 0.3f) * Mathf.Max(0, Mathf.Sin(rad + Mathf.PI));
             _animator.SetIKPosition(AvatarIKGoal.RightFoot, pos + up);
             _animator.SetIKPositionWeight(AvatarIKGoal.RightFoot, 1);
         }
@@ -104,6 +106,13 @@ public class Puppet : MonoBehaviour
             var pivot = Quaternion.AngleAxis(-90, Vector3.up) * Quaternion.LookRotation(right);
             var und = _bodyNoise.Rotation(1, _bodyUndulation);
             _animator.bodyRotation = pivot * und;
+        }
+
+        {
+            var rot = _bodyNoise.Rotation(5, 20, 20, 30);
+            _animator.SetBoneLocalRotation(HumanBodyBones.Spine, rot);
+            _animator.SetBoneLocalRotation(HumanBodyBones.Chest, rot);
+            _animator.SetBoneLocalRotation(HumanBodyBones.UpperChest, rot);
         }
 
         {
