@@ -24,6 +24,14 @@ public class Puppet : MonoBehaviour
     int _stepCount;
     float _stepTime;
 
+    Vector3 GetNextStepPos(Vector3 pivot, Vector3 prev)
+    {
+        var dest = new Vector3(Random.value * 2 - 1, 0, Random.value * 2 - 1);
+        var dot = Vector3.Dot((prev - pivot).normalized, (dest - pivot).normalized);
+        var flip = dot < 0 ? -1 : 1;
+        return pivot + (dest - pivot).normalized * _stride * flip;
+    }
+
     void Start()
     {
         _animator = GetComponent<Animator>();
@@ -43,17 +51,15 @@ public class Puppet : MonoBehaviour
 
         if (_stepTime > 1)
         {
-            var dest = new Vector3(Random.value * 2 - 1, 0, Random.value * 2 - 1);
-
             if ((_stepCount & 1) == 0)
             {
                 _rightFootPos = _newRightFootPos;
-                _newRightFootPos = _newLeftFootPos + (dest - _newLeftFootPos).normalized * _stride;
+                _newRightFootPos = GetNextStepPos(_newLeftFootPos, _rightFootPos);
             }
             else
             {
                 _leftFootPos = _newLeftFootPos;
-                _newLeftFootPos = _newRightFootPos + (dest - _newRightFootPos).normalized * _stride;
+                _newLeftFootPos = GetNextStepPos(_newRightFootPos, _leftFootPos);
             }
 
             _stepCount += 1;
@@ -87,7 +93,7 @@ public class Puppet : MonoBehaviour
                 (rad > Mathf.PI && rad < Mathf.PI * 1.5f) ? _rightFootPos : _newRightFootPos,
                 Mathf.Sin(rad) * 0.5f + 0.5f
             );
-            var up = Vector3.up * (_bodyHeight + Mathf.Cos(rad * 2) * _stepHeight / 3);
+            var up = Vector3.up * (_bodyHeight + Mathf.Cos(rad * 2) * _stepHeight / 2);
             _animator.bodyPosition = pos + up;
         }
 
