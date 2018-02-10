@@ -7,16 +7,23 @@ namespace Puppet
     {
         #region Editable fields
 
+        [SerializeField] float _footDistance = 0.3f;
         [SerializeField] float _stepFrequency = 2;
-        [SerializeField] float _stride = 0.4f;
         [SerializeField] float _stepHeight = 0.3f;
         [SerializeField] float _stepAngle = 90;
-        [SerializeField] float _bodyHeight = 0.9f;
-        [SerializeField] float _bodyPositionNoise = 0.1f;
-        [SerializeField] float _bodyRotationNoise = 30;
+
+        [SerializeField] float _hipHeight = 0.9f;
+        [SerializeField] float _hipPositionNoise = 0.1f;
+        [SerializeField] float _hipRotationNoise = 30;
+
+        [SerializeField] float _spineBend = -8;
+        [SerializeField] Vector3 _spineRotationNoise = new Vector3(30, 20, 20);
+
         [SerializeField] Vector3 _handPosition = new Vector3(0.3f, 0.3f, -0.2f);
-        [SerializeField] float _handPositionNoise = 0.3f;
+        [SerializeField] Vector3 _handPositionNoise = new Vector3(0.3f, 0.3f, 0.3f);
+
         [SerializeField] float _headMove = 3;
+
         [SerializeField] float _noiseFrequency = 1.1f;
         [SerializeField] int _randomSeed = 123;
 
@@ -53,6 +60,11 @@ namespace Puppet
         static float SmoothStep(float x)
         {
             return x * x * (3 - 2 * x);
+        }
+
+        static Quaternion NoiseRotation(NoiseGenerator ng, int seed, Vector3 angles)
+        {
+            return ng.Rotation(seed, angles.x, angles.y, angles.z);
         }
 
         #endregion
@@ -130,8 +142,8 @@ namespace Puppet
                 var pos = Vector3.Lerp(LeftFootPosition, RightFootPosition, right);
 
                 // Vertical move: Two wave while one step. Add noise.
-                var y = _bodyHeight + Mathf.Cos(StepTime * Mathf.PI * 4) * _stepHeight / 2;
-                y += _noise.Value(0) * _bodyPositionNoise;
+                var y = _hipHeight + Mathf.Cos(StepTime * Mathf.PI * 4) * _stepHeight / 2;
+                y += _noise.Value(0) * _hipPositionNoise;
 
                 return SetY(pos, y);
             }
@@ -150,13 +162,20 @@ namespace Puppet
                 rot *= Quaternion.LookRotation(right.normalized);
 
                 // Add noise.
-                return rot * _noise.Rotation(1, _bodyRotationNoise);
+                return rot * _noise.Rotation(1, _hipRotationNoise);
             }
         }
 
         #endregion
 
         #region Local properties and functions for upper body animation
+
+        // Spine (spine/chest/upper chest) rotation
+        Quaternion SpineRotation { get {
+            var rot = Quaternion.AngleAxis(_spineBend, Vector3.forward);
+            rot *= NoiseRotation(_noise, 2, _spineRotationNoise);
+            return rot;
+        } }
 
         // Calculates the hand position
         Vector3 GetHandPosition(int index)
@@ -171,7 +190,7 @@ namespace Puppet
             pos = _animator.bodyRotation * pos + _animator.bodyPosition;
 
             // Add noise.
-            pos += _noise.Vector(2 + index) * _handPositionNoise;
+            pos += Vector3.Scale(_noise.Vector(4 + index), _handPositionNoise);
 
             // Clamping in the local space of the chest bone.
             pos = _chestMatrixInv * new Vector4(pos.x, pos.y, pos.z, 1);
@@ -188,7 +207,7 @@ namespace Puppet
         // Look at position (for head movement)
         Vector3 LookAtPosition {
             get {
-                var pos = _noise.Vector(5) * _headMove;
+                var pos = _noise.Vector(3) * _headMove;
                 pos.z = 2;
                 return _animator.bodyPosition + _animator.bodyRotation * pos;
             }
@@ -197,6 +216,11 @@ namespace Puppet
         #endregion
 
         #region MonoBehaviour implementation
+
+        void OnValidate()
+        {
+            _footDistance = Mathf.Max(_footDistance, 0.01f);
+        }
 
         void Start()
         {
@@ -208,7 +232,7 @@ namespace Puppet
 
             // Initial foot positions
             var origin = SetY(transform.position, 0);
-            var foot = transform.right * _stride / 2;
+            var foot = transform.right * _footDistance / 2;
             _feet[0] = origin - foot;
             _feet[1] = origin + foot;
         }
@@ -219,13 +243,28 @@ namespace Puppet
             _noise.Frequency = _noiseFrequency;
             _noise.Step();
 
-            // Check if the next step is going to begin in this frame.
+            // Step time delta
             var delta = _stepFrequency * Time.deltaTime;
 
-            if (StepCount < Mathf.FloorToInt(_step + delta))
+            // Right vector (a vector indicating from left foot to right foot)
+            // Renormalized every frame to apply _footDistance changes.
+            var right = (_feet[1] - _feet[0]).normalized * _footDistance;
+
+            // Check if the current step ends in this frame.
+            if (StepCount == Mathf.FloorToInt(_step + delta))
             {
-                // Update the next pivot point.
-                var right = (_feet[1] - _feet[0]).normalized * _stride;
+                // The current step keeps going:
+                //  Recalculate the non-pivot foot position.
+                //  (To apply _footDistance changes)
+                if (PivotIsLeft)
+                    _feet[1] = _feet[0] + right;
+                else
+                    _feet[0] = _feet[1] - right;
+            }
+            else
+            {
+                // The current step is going to end:
+                //  Update the next pivot point;
                 if (PivotIsLeft)
                     _feet[1] = _feet[0] + StepRotationFull * right;
                 else
@@ -243,23 +282,21 @@ namespace Puppet
         void OnAnimatorIK(int layerIndex)
         {
             _animator.SetIKPosition(AvatarIKGoal.LeftFoot, LeftFootPosition);
-            _animator.SetIKPositionWeight(AvatarIKGoal.LeftFoot, 1);
-
             _animator.SetIKPosition(AvatarIKGoal.RightFoot, RightFootPosition);
+            _animator.SetIKPositionWeight(AvatarIKGoal.LeftFoot, 1);
             _animator.SetIKPositionWeight(AvatarIKGoal.RightFoot, 1);
 
             _animator.bodyPosition = BodyPosition;
             _animator.bodyRotation = BodyRotation;
 
-            var twist = Quaternion.AngleAxis(-8, Vector3.forward) * _noise.Rotation(5, 30, 20, 20);
-            _animator.SetBoneLocalRotation(HumanBodyBones.Spine, twist);
-            _animator.SetBoneLocalRotation(HumanBodyBones.Chest, twist);
-            _animator.SetBoneLocalRotation(HumanBodyBones.UpperChest, twist);
+            var spine = SpineRotation;
+            _animator.SetBoneLocalRotation(HumanBodyBones.Spine, spine);
+            _animator.SetBoneLocalRotation(HumanBodyBones.Chest, spine);
+            _animator.SetBoneLocalRotation(HumanBodyBones.UpperChest, spine);
 
             _animator.SetIKPosition(AvatarIKGoal.LeftHand, LeftHandPosition);
-            _animator.SetIKPositionWeight(AvatarIKGoal.LeftHand, 1);
-
             _animator.SetIKPosition(AvatarIKGoal.RightHand, RightHandPosition);
+            _animator.SetIKPositionWeight(AvatarIKGoal.LeftHand, 1);
             _animator.SetIKPositionWeight(AvatarIKGoal.RightHand, 1);
 
             _animator.SetLookAtPosition(LookAtPosition);

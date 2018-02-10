@@ -448,15 +448,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 74eacbddd55ba8c47a31b3087d99f2b9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _footDistance: 0.3
   _stepFrequency: 1
-  _stride: 0.3
   _stepHeight: 0.2
   _stepAngle: 120
-  _bodyHeight: 0.93
-  _bodyPositionNoise: 0.1
-  _bodyRotationNoise: 30
+  _hipHeight: 0.9
+  _hipPositionNoise: 0.1
+  _hipRotationNoise: 30
+  _spineBend: -8
+  _spineRotationNoise: {x: 30, y: 20, z: 20}
   _handPosition: {x: 0.3, y: 0.3, z: 0.3}
-  _handPositionNoise: 0.3
+  _handPositionNoise: {x: 0.3, y: 0.3, z: 0.3}
   _headMove: 5
   _noiseFrequency: 1
   _randomSeed: 123
@@ -469,7 +471,7 @@ Prefab:
     m_Modifications:
     - target: {fileID: 400002, guid: 427d34d6970bfe74f99a26b6745ccbc5, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -1.639
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 400002, guid: 427d34d6970bfe74f99a26b6745ccbc5, type: 3}
       propertyPath: m_LocalPosition.y
@@ -477,7 +479,7 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 400002, guid: 427d34d6970bfe74f99a26b6745ccbc5, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 1.848
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 400002, guid: 427d34d6970bfe74f99a26b6745ccbc5, type: 3}
       propertyPath: m_LocalRotation.x
