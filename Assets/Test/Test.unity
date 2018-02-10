@@ -234,7 +234,7 @@ Transform:
   m_LocalScale: {x: 2, y: 2, z: 2}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 3
+  m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1027483309
 GameObject:
@@ -448,10 +448,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 74eacbddd55ba8c47a31b3087d99f2b9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _stepFrequency: 2
+  _stepFrequency: 1
   _stride: 0.3
   _stepHeight: 0.2
-  _stepAngle: 120
+  _stepAngle: 200
   _bodyHeight: 0.93
   _bodyUndulation: 30
   _handPosition: {x: 0.3, y: 0.3, z: 0.3}
@@ -496,7 +496,7 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 400002, guid: 427d34d6970bfe74f99a26b6745ccbc5, type: 3}
       propertyPath: m_RootOrder
-      value: 2
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 400002, guid: 427d34d6970bfe74f99a26b6745ccbc5, type: 3}
       propertyPath: m_LocalEulerAnglesHint.y
