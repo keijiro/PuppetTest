@@ -325,7 +325,7 @@ namespace Puppet
 
             // Random number/noise generators
             _hash = new XXHash(_randomSeed);
-            _noise = new NoiseGenerator(_noiseFrequency);
+            _noise = new NoiseGenerator(_randomSeed, _noiseFrequency);
 
             // Initial foot positions
             var origin = SetY(transform.position, 0);
@@ -374,14 +374,14 @@ namespace Puppet
                 if (_hash.Value01(StepSeed) > 0.5f) _stepSign *= -1;
 
                 // Check if the next destination is in the range.
-                var dest = CurrentStepDestination;
-                if (dest.magnitude > _maxDistance)
+                var dist = (CurrentStepDestination - transform.position).magnitude;
+                if (dist > _maxDistance)
                 {
                     // The next destination is out of the range:
                     //  Try flipping the turn direction. Use it if it makes
                     //  the destination closer to the origin. Revert it if not.
                     _stepSign *= -1;
-                    if (dest.magnitude < CurrentStepDestination.magnitude)
+                    if (dist < (CurrentStepDestination - transform.position).magnitude)
                         _stepSign *= -1;
                 }
             }
