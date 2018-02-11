@@ -30,6 +30,95 @@ namespace Puppet
 
         #endregion
 
+        #region Public accessor properties
+
+        public float footDistance {
+            get { return _footDistance; }
+            set { _footDistance = value; }
+        }
+
+        public float stepFrequency {
+            get { return _stepFrequency; }
+            set { _stepFrequency = value; }
+        }
+
+        public float stepHeight {
+            get { return _stepHeight; }
+            set { _stepHeight = value; }
+        }
+
+        public float stepAngle {
+            get { return _stepAngle; }
+            set { _stepAngle = value; }
+        }
+
+        public float maxDistance {
+            get { return _maxDistance; }
+            set { _maxDistance = value; }
+        }
+
+        //
+
+        public float hipHeight {
+            get { return _hipHeight; }
+            set { _hipHeight = value; }
+        }
+
+        public float hipPositionNoise {
+            get { return _hipPositionNoise; }
+            set { _hipPositionNoise = value; }
+        }
+
+        public float hipRotationNoise {
+            get { return _hipRotationNoise; }
+            set { _hipRotationNoise = value; }
+        }
+
+        //
+
+        public float spineBend {
+            get { return _spineBend; }
+            set { _spineBend = value; }
+        }
+
+        public Vector3 spineRotationNoise {
+            get { return _spineRotationNoise; }
+            set { _spineRotationNoise = value; }
+        }
+
+        //
+
+        public Vector3 handPosition {
+            get { return _handPosition; }
+            set { _handPosition = value; }
+        }
+
+        public Vector3 handPositionNoise {
+            get { return _handPositionNoise; }
+            set { _handPositionNoise = value; }
+        }
+
+        //
+
+        public float headMove {
+            get { return _headMove; }
+            set { _headMove = value; }
+        }
+
+        //
+
+        public float noiseFrequency {
+            get { return _noiseFrequency; }
+            set { _noiseFrequency = value; }
+        }
+
+        public int randomSeed {
+            get { return _randomSeed; }
+            set { _randomSeed = value; }
+        }
+
+        #endregion
+
         #region Private variables
 
         Animator _animator;
