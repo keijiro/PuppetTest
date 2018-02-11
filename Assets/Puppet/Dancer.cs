@@ -11,6 +11,7 @@ namespace Puppet
         [SerializeField] float _stepFrequency = 2;
         [SerializeField] float _stepHeight = 0.3f;
         [SerializeField] float _stepAngle = 90;
+        [SerializeField] float _maxDistance = 2;
 
         [SerializeField] float _hipHeight = 0.9f;
         [SerializeField] float _hipPositionNoise = 0.1f;
@@ -41,6 +42,9 @@ namespace Puppet
 
         // Timer for step animation
         float _step;
+
+        // Sign of the step angle (turn direction)
+        float _stepSign = 1;
 
         // Transformation matrices of the chest bone. Used to calculate the
         // hand positions. These matrices are unavailable in OnAnimatorIK, so
@@ -83,14 +87,9 @@ namespace Puppet
         // Is the pivot in the current step the left foot?
         bool PivotIsLeft { get { return (StepCount & 1) == 0; } }
 
-        // Is the current step a left turn or a right turn?
-        float StepSign { get {
-            return _hash.Value01(StepSeed) > 0.5f ? 1 : -1;
-        } }
-
         // Angle of the pivot rotation in the current step.
         float StepAngle { get {
-            return _hash.Range(0.5f, 1.0f, StepSeed + 1) * _stepAngle * StepSign;
+            return _hash.Range(0.5f, 1.0f, StepSeed + 1) * _stepAngle * _stepSign;
         } }
 
         // Pivot rotation at the end of the current step.
@@ -128,6 +127,15 @@ namespace Puppet
 
         Vector3 LeftFootPosition { get { return GetFootPosition(0); } }
         Vector3 RightFootPosition { get { return GetFootPosition(1); } }
+
+        // Destination foot point of the current step
+        Vector3 CurrentStepDestination { get {
+            var right = (_feet[1] - _feet[0]).normalized * _footDistance;
+            if (PivotIsLeft)
+                return _feet[0] + StepRotationFull * right;
+            else
+                return _feet[1] - StepRotationFull * right;
+        } }
 
         #endregion
 
@@ -260,18 +268,34 @@ namespace Puppet
                     _feet[1] = _feet[0] + right;
                 else
                     _feet[0] = _feet[1] - right;
+
+                // Update the step time
+                _step += delta;
             }
             else
             {
                 // The current step is going to end:
                 //  Update the next pivot point;
-                if (PivotIsLeft)
-                    _feet[1] = _feet[0] + StepRotationFull * right;
-                else
-                    _feet[0] = _feet[1] - StepRotationFull * right;
-            }
+                _feet[PivotIsLeft ? 1 : 0] = CurrentStepDestination;
 
-            _step += delta;
+                // Update the step time
+                _step += delta;
+
+                // Flip the turn direction randomly.
+                if (_hash.Value01(StepSeed) > 0.5f) _stepSign *= -1;
+
+                // Check if the next destination is in the range.
+                var dest = CurrentStepDestination;
+                if (dest.magnitude > _maxDistance)
+                {
+                    // The next destination is out of the range:
+                    //  Try flipping the turn direction. Use it if it makes
+                    //  the destination closer to the origin. Revert it if not.
+                    _stepSign *= -1;
+                    if (dest.magnitude < CurrentStepDestination.magnitude)
+                        _stepSign *= -1;
+                }
+            }
 
             // Update the chest matrices for use in OnAnimatorIK.
             var chest = _animator.GetBoneTransform(HumanBodyBones.Chest);

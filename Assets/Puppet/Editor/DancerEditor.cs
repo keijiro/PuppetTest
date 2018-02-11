@@ -11,6 +11,7 @@ namespace Puppet
         SerializedProperty _stepFrequency;
         SerializedProperty _stepHeight;
         SerializedProperty _stepAngle;
+        SerializedProperty _maxDistance;
 
         SerializedProperty _hipHeight;
         SerializedProperty _hipPositionNoise;
@@ -43,6 +44,7 @@ namespace Puppet
             _stepFrequency = serializedObject.FindProperty("_stepFrequency");
             _stepHeight = serializedObject.FindProperty("_stepHeight");
             _stepAngle = serializedObject.FindProperty("_stepAngle");
+            _maxDistance = serializedObject.FindProperty("_maxDistance");
 
             _hipHeight = serializedObject.FindProperty("_hipHeight");
             _hipPositionNoise = serializedObject.FindProperty("_hipPositionNoise");
@@ -74,6 +76,7 @@ namespace Puppet
             EditorGUILayout.PropertyField(_stepFrequency);
             EditorGUILayout.PropertyField(_stepHeight);
             EditorGUILayout.PropertyField(_stepAngle);
+            EditorGUILayout.PropertyField(_maxDistance);
 
             EditorGUILayout.Space();
 
