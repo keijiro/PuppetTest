@@ -521,3 +521,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _prefab: {fileID: 1018131160324000, guid: 198046d46d62c8546acc0e2e0bf4f37c, type: 2}
+  _columns: 20
+  _rows: 20
+  _interval: 2

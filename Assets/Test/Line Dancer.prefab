@@ -22,7 +22,7 @@ GameObject:
   - component: {fileID: 95681197086748568}
   - component: {fileID: 114141661499983512}
   m_Layer: 0
-  m_Name: Dancer
+  m_Name: Line Dancer
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -158,11 +158,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 74eacbddd55ba8c47a31b3087d99f2b9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _footDistance: 0.3
+  _footDistance: 0.2
   _stepFrequency: 1
   _stepHeight: 0.2
   _stepAngle: 120
-  _maxDistance: 1
+  _maxDistance: 0.1
   _hipHeight: 0.85
   _hipPositionNoise: 0.1
   _hipRotationNoise: 30
