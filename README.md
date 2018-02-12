@@ -11,3 +11,8 @@ sin curves and Perlin noise functions. The standard [humanoid IK rig] is used
 to animate the model.
 
 [humanoid IK rig]: https://docs.unity3d.com/Manual/InverseKinematics.html
+
+![gif](https://i.imgur.com/cqlAwKL.gif)
+![gif](https://i.imgur.com/eu1bEwT.gif)
+
+(Left: Random variations, Right: Synchronized but with random multipliers)
