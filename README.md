@@ -1,7 +1,7 @@
 PuppetTest
 ----------
 
-![gif](https://i.imgur.com/uS4rbD5.gif)
+![gif](https://i.imgur.com/F8wrLm9.gif)
 ![gif](https://i.imgur.com/XLNbNfT.gif)
 
 This is my second attempt at generating dance animation with a procedural
