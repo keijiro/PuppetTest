@@ -16,3 +16,8 @@ to animate the model.
 ![gif](https://i.imgur.com/eu1bEwT.gif)
 
 (Left: Random variations, Right: Synchronized but with random multipliers)
+
+License
+-------
+
+[CC0](https://creativecommons.org/publicdomain/zero/1.0/)
