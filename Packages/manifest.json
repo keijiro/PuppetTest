@@ -1,6 +1,7 @@
 {
   "dependencies": {
     "com.unity.package-manager-ui": "2.1.2",
+    "jp.keijiro.neolowman": "https://github.com/keijiro/NeoLowMan.git#upm",
     "com.unity.modules.ai": "1.0.0",
     "com.unity.modules.animation": "1.0.0",
     "com.unity.modules.assetbundle": "1.0.0",
@@ -31,5 +32,11 @@
     "com.unity.modules.vr": "1.0.0",
     "com.unity.modules.wind": "1.0.0",
     "com.unity.modules.xr": "1.0.0"
+  },
+  "lock": {
+    "jp.keijiro.neolowman": {
+      "hash": "f5c336afd91398a640cf954e26ff06a64b551299",
+      "revision": "upm"
+    }
   }
 }
