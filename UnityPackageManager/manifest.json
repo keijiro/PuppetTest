@@ -1,9 +1,0 @@
-{
-  "registry": "https://staging-packages.unity.com",
-  "dependencies": {
-    "com.unity.ads": "exclude",
-    "com.unity.analytics": "exclude",
-    "com.unity.standardevents": "exclude",
-    "com.unity.purchasing": "exclude"
-  }
-}

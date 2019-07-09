@@ -2,7 +2,7 @@
 
 public class Spawner : MonoBehaviour
 {
-    [SerializeField] GameObject _prefab;
+    [SerializeField] GameObject _prefab = null;
     [SerializeField] int _columns = 10;
     [SerializeField] int _rows = 10;
     [SerializeField] float _interval = 1;
