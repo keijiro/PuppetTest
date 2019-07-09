@@ -1,5 +1,7 @@
-﻿using UnityEngine;
+using UnityEngine;
+using Unity.Mathematics;
 using Klak.Math;
+using Noise = Klak.Math.NoiseHelper;
 
 namespace Puppet
 {
@@ -26,7 +28,7 @@ namespace Puppet
         [SerializeField] float _headMove = 3;
 
         [SerializeField] float _noiseFrequency = 1.1f;
-        [SerializeField] int _randomSeed = 123;
+        [SerializeField] uint _randomSeed = 123;
 
         #endregion
 
@@ -112,7 +114,7 @@ namespace Puppet
             set { _noiseFrequency = value; }
         }
 
-        public int randomSeed {
+        public uint randomSeed {
             get { return _randomSeed; }
             set { _randomSeed = value; }
         }
@@ -124,7 +126,7 @@ namespace Puppet
         Animator _animator;
 
         XXHash _hash;
-        NoiseGenerator _noise;
+        float2 _noise;
 
         // Foot positions
         Vector3[] _feet = new Vector3[2];
@@ -155,11 +157,6 @@ namespace Puppet
             return x * x * (3 - 2 * x);
         }
 
-        static Quaternion NoiseRotation(NoiseGenerator ng, int seed, Vector3 angles)
-        {
-            return ng.Rotation(seed, angles.x, angles.y, angles.z);
-        }
-
         #endregion
 
         #region Local properties and functions for foot animation
@@ -171,14 +168,14 @@ namespace Puppet
         float StepTime { get { return _step - Mathf.Floor(_step); } }
 
         // Random seed for the current step
-        int StepSeed { get { return StepCount * 100; } }
+        uint StepSeed { get { return (uint)StepCount * 100; } }
 
         // Is the pivot in the current step the left foot?
         bool PivotIsLeft { get { return (StepCount & 1) == 0; } }
 
         // Angle of the pivot rotation in the current step.
         float StepAngle { get {
-            return _hash.Range(0.5f, 1.0f, StepSeed + 1) * _stepAngle * _stepSign;
+            return _hash.Float(0.5f, 1.0f, StepSeed + 1) * _stepAngle * _stepSign;
         } }
 
         // Pivot rotation at the end of the current step.
@@ -240,7 +237,7 @@ namespace Puppet
 
                 // Vertical move: Two wave while one step. Add noise.
                 var y = _hipHeight + Mathf.Cos(StepTime * Mathf.PI * 4) * _stepHeight / 2;
-                y += _noise.Value(0) * _hipPositionNoise;
+                y += noise.snoise(_noise) * _hipPositionNoise;
 
                 return SetY(pos, y);
             }
@@ -259,7 +256,7 @@ namespace Puppet
                 rot *= Quaternion.LookRotation(right.normalized);
 
                 // Add noise.
-                return rot * _noise.Rotation(1, _hipRotationNoise);
+                return rot * Noise.Rotation(_noise, math.radians(_hipRotationNoise), 1);
             }
         }
 
@@ -270,7 +267,7 @@ namespace Puppet
         // Spine (spine/chest/upper chest) rotation
         Quaternion SpineRotation { get {
             var rot = Quaternion.AngleAxis(_spineBend, Vector3.forward);
-            rot *= NoiseRotation(_noise, 2, _spineRotationNoise);
+            rot *= Noise.Rotation(_noise, math.radians(_spineRotationNoise), 2);
             return rot;
         } }
 
@@ -287,7 +284,7 @@ namespace Puppet
             pos = _animator.bodyRotation * pos + _animator.bodyPosition;
 
             // Add noise.
-            pos += Vector3.Scale(_noise.Vector(4 + index), _handPositionNoise);
+            pos += Vector3.Scale(Noise.Float3(_noise, (uint)(4 + index)), _handPositionNoise);
 
             // Clamping in the local space of the chest bone.
             pos = _chestMatrixInv * new Vector4(pos.x, pos.y, pos.z, 1);
@@ -304,7 +301,7 @@ namespace Puppet
         // Look at position (for head movement)
         Vector3 LookAtPosition {
             get {
-                var pos = _noise.Vector(3) * _headMove;
+                var pos = Noise.Float3(_noise, 3) * _headMove;
                 pos.z = 2;
                 return _animator.bodyPosition + _animator.bodyRotation * pos;
             }
@@ -325,7 +322,7 @@ namespace Puppet
 
             // Random number/noise generators
             _hash = new XXHash(_randomSeed);
-            _noise = new NoiseGenerator(_randomSeed, _noiseFrequency);
+            _noise = _hash.Float2(-1000, 1000, 0);
 
             // Initial foot positions
             var origin = SetY(transform.position, 0);
@@ -337,8 +334,7 @@ namespace Puppet
         void Update()
         {
             // Noise update
-            _noise.Frequency = _noiseFrequency;
-            _noise.Step();
+            _noise.x += _noiseFrequency * Time.deltaTime;
 
             // Step time delta
             var delta = _stepFrequency * Time.deltaTime;
@@ -371,7 +367,7 @@ namespace Puppet
                 _step += delta;
 
                 // Flip the turn direction randomly.
-                if (_hash.Value01(StepSeed) > 0.5f) _stepSign *= -1;
+                if (_hash.Float(StepSeed) > 0.5f) _stepSign *= -1;
 
                 // Check if the next destination is in the range.
                 var dist = (CurrentStepDestination - transform.position).magnitude;

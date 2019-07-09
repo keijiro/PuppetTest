@@ -40,7 +40,7 @@ public class Spawner : MonoBehaviour
 
                 dancer.headMove       *= Random.Range(0.2f, 2.8f);
                 dancer.noiseFrequency *= Random.Range(0.4f, 1.8f);
-                dancer.randomSeed      = Random.Range(0, 0xffffff);
+                dancer.randomSeed      = (uint)Random.Range(0, 0xffffff);
 
                 var renderer = dancer.GetComponentInChildren<Renderer>();
                 renderer.material.color = Random.ColorHSV(0, 1, 0.6f, 0.8f, 0.8f, 1.0f);
