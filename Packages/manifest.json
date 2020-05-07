@@ -1,24 +1,14 @@
 {
-  "dependencies": {
-    "com.unity.mathematics": "1.0.1",
-    "com.unity.package-manager-ui": "2.1.2",
-    "jp.keijiro.klak.math": "https://github.com/keijiro/KlakMath.git#upm",
-    "jp.keijiro.klak.motion": "https://github.com/keijiro/ProceduralMotion.git#upm",
-    "jp.keijiro.neolowman": "https://github.com/keijiro/NeoLowMan.git#upm",
-    "com.unity.modules.animation": "1.0.0"
-  },
-  "lock": {
-    "jp.keijiro.klak.math": {
-      "hash": "4776a3fe8ca109d57fcd2c0b5cc874a664966270",
-      "revision": "upm"
-    },
-    "jp.keijiro.klak.motion": {
-      "hash": "d0e16b9ed633cb53c6865e40fbe270172b471b74",
-      "revision": "upm"
-    },
-    "jp.keijiro.neolowman": {
-      "hash": "f5c336afd91398a640cf954e26ff06a64b551299",
-      "revision": "upm"
+  "scopedRegistries": [
+    {
+      "name": "Keijiro",
+      "url": "https://registry.npmjs.com",
+      "scopes": [ "jp.keijiro" ]
     }
+  ],
+  "dependencies": {
+    "jp.keijiro.klak.math": "1.0.1",
+    "jp.keijiro.klak.motion": "1.0.1",
+    "jp.keijiro.neolowman": "1.0.0"
   }
 }
