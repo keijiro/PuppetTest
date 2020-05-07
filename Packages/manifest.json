@@ -9,6 +9,7 @@
   "dependencies": {
     "jp.keijiro.klak.math": "1.0.1",
     "jp.keijiro.klak.motion": "1.0.1",
-    "jp.keijiro.neolowman": "1.0.0"
+    "jp.keijiro.neolowman": "1.0.0",
+    "jp.keijiro.test-assets": "1.0.1"
   }
 }
