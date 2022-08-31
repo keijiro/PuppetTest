@@ -3,13 +3,16 @@
     {
       "name": "Keijiro",
       "url": "https://registry.npmjs.com",
-      "scopes": [ "jp.keijiro" ]
+      "scopes": [
+        "jp.keijiro"
+      ]
     }
   ],
   "dependencies": {
-    "jp.keijiro.klak.math": "1.0.1",
-    "jp.keijiro.klak.motion": "1.0.1",
+    "jp.keijiro.klak.math": "1.0.3",
+    "jp.keijiro.klak.motion": "1.0.2",
     "jp.keijiro.neolowman": "1.0.0",
-    "jp.keijiro.test-assets": "1.0.1"
+    "jp.keijiro.test-assets": "1.0.1",
+    "com.unity.modules.animation": "1.0.0"
   }
 }
